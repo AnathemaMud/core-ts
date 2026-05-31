@@ -26,6 +26,7 @@ export interface ISkillOptions {
 	targetSelf?: boolean;
 	type: SkillType;
 	options?: any;
+	getDamage?: (player: PlayerOrNpc) => number | null;
 }
 
 export interface ISkillCooldown {
@@ -54,6 +55,7 @@ export class Skill {
 	cooldownLength: ISkillCooldown | number | null;
 	effect: string | null;
 	flags: any[];
+	getDamage: ((player: PlayerOrNpc) => number | null) | null;
 	id: string;
 	info: Function;
 	initiatesCombat: boolean;
@@ -85,6 +87,7 @@ export class Skill {
 			targetSelf = false,
 			type = SkillType.SKILL,
 			options = {},
+			getDamage = null,
 		} = config;
 
 		this.configureEffect = configureEffect;
@@ -110,6 +113,7 @@ export class Skill {
 		this.state = state;
 		this.targetSelf = targetSelf;
 		this.type = type;
+		this.getDamage = getDamage;
 	}
 
 	/**
