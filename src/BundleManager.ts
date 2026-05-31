@@ -561,7 +561,7 @@ export class BundleManager {
 		const records = await loader.fetchAll();
 		for (const helpName in records) {
 			try {
-				const hfile = new Helpfile(bundle, helpName, records[helpName].doc);
+				const hfile = new Helpfile(bundle, helpName, records[helpName]);
 
 				const command =
 					hfile.command && this.state.CommandManager.get(hfile.command);
