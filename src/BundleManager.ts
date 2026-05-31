@@ -710,6 +710,7 @@ export class BundleManager {
 
 			Logger.verbose(`\t\t${skillName}`);
 			const skill = new Skill(skillName, skillImport, this.state);
+			skill.source = skillPath;
 
 			if (skill.type === SkillType.SKILL) {
 				this.state.SkillManager.add(skill);

@@ -68,6 +68,11 @@ export class Skill {
 	targetSelf: boolean;
 	type: SkillType;
 	/**
+	 * File path to the skill definition on disk, used for hot-reloading.
+	 */
+	source: string | null;
+
+	/**
 	 * @param {string} id
 	 * @param {object} config
 	 * @param {GameState} state
@@ -114,6 +119,7 @@ export class Skill {
 		this.targetSelf = targetSelf;
 		this.type = type;
 		this.getDamage = getDamage;
+		this.source = null;
 	}
 
 	/**
