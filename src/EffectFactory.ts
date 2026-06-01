@@ -69,6 +69,10 @@ export class EffectFactory {
 		let def = Object.assign({}, entry.definition);
 		def.config = Object.assign(def.config || {}, config || {});
 		def.state = Object.assign(def.state || {}, state || {});
+		// Convert -1 to Infinity for runtime (serialization handles the reverse)
+		if (def.config.duration === -1) {
+			def.config.duration = Infinity;
+		}
 		const effect = new Effect(id, def);
 		entry.eventManager.attach(effect);
 
