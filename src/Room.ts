@@ -248,7 +248,7 @@ export class Room extends GameEntity {
 			}
 		);
 
-		if (!this.area || !this.coordinates) {
+		if (!this.area || !this.coordinates || this.area.metadata.noInferExits) {
 			return exits;
 		}
 
