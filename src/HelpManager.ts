@@ -81,6 +81,13 @@ export class HelpManager {
 			return null;
 		}
 
+		// Prefer name-prefix match over keyword/alias match
+		for (const [name, hfile] of results) {
+			if (name.indexOf(help) === 0) {
+				return hfile;
+			}
+		}
+
 		const [_, hfile] = [...results][0];
 
 		return hfile;
