@@ -18,4 +18,11 @@ export class Config {
 	static load(data: object) {
 		__cache = data;
 	}
+
+	/**
+	 * Set a config value at runtime
+	 */
+	static set(key: string, value: any) {
+		__cache[key] = value;
+	}
 }
