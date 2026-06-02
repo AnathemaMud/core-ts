@@ -188,37 +188,29 @@ export class Broadcast {
 		}
 
 		player.socket._prompted = false;
+
+		// If there are extra prompts (stats, combat), skip the bare prompt string
+		if (player.extraPrompts.size > 0) {
+			for (const [id, extraPrompt] of player.extraPrompts) {
+				Broadcast.sayAt(
+					player as Broadcastable,
+					extraPrompt.renderer(),
+					wrapWidth,
+					useColor
+				);
+				if (extraPrompt.removeOnRender) {
+					player.removePrompt(id);
+				}
+			}
+			return;
+		}
+
 		Broadcast.at(
 			player as Broadcastable,
 			'\r\n' + player.interpolatePrompt(player.prompt, extra) + ' ',
 			wrapWidth,
 			useColor
 		);
-		let needsNewline = player.extraPrompts.size > 0;
-		if (needsNewline) {
-			Broadcast.sayAt(player as Broadcastable);
-		}
-
-		for (const [id, extraPrompt] of player.extraPrompts) {
-			Broadcast.sayAt(
-				player as Broadcastable,
-				extraPrompt.renderer(),
-				wrapWidth,
-				useColor
-			);
-			if (extraPrompt.removeOnRender) {
-				player.removePrompt(id);
-			}
-		}
-
-		if (needsNewline) {
-			Broadcast.at(player as Broadcastable, '> ');
-		}
-
-		player.socket._prompted = true;
-		if (player.socket.writable) {
-			player.socket.command('goAhead');
-		}
 	}
 
 	/**
