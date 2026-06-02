@@ -46,10 +46,18 @@ export class CommandManager {
 	 * @return {Command}
 	 */
 	find(search: string, returnAlias?: boolean) {
+		let best: Command | undefined;
+		let bestName: string | undefined;
+
 		for (const [name, command] of this.commands.entries()) {
 			if (name.indexOf(search) === 0) {
-				return returnAlias ? { command, alias: name } : command;
+				if (!best || command.requiredRole < best.requiredRole) {
+					best = command;
+					bestName = name;
+				}
 			}
 		}
+
+		return returnAlias ? (best ? { command: best, alias: bestName! } : undefined) : best;
 	}
 }
