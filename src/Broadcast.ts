@@ -202,6 +202,7 @@ export class Broadcast {
 					player.removePrompt(id);
 				}
 			}
+			player.socket._prompted = true;
 			return;
 		}
 
@@ -211,6 +212,7 @@ export class Broadcast {
 			wrapWidth,
 			useColor
 		);
+		player.socket._prompted = true;
 	}
 
 	/**
