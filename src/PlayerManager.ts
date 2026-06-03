@@ -65,6 +65,7 @@ export class PlayerManager extends EventEmitter {
 			player.socket?.end();
 		}
 
+		player.emit('logout');
 		player.removeAllListeners();
 		player.removeFromCombat();
 		player.effects.clear();

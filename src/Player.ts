@@ -150,22 +150,20 @@ export class Player extends Character {
 		pd.l = pd.level;
 		pd.g = pd.gold;
 		pd.n = pd.target?.name;
+		pd.a = pd.target?.health?.current;
+		pd.A = pd.target?.health?.max;
+		pd.N = this.name;
 
-		let matches = null;
-		while ((matches = promptStr.match(/%([a-zA-Z\.]+)%/))) {
-			const token = matches[1];
-			let promptValue: any = token
-				.split('.')
-				.reduce(
-					(obj, index) => obj && (obj[index] as typeof promptData),
-					promptData
-				);
-
-			if (promptValue === null || promptValue === undefined) {
-				(promptValue as string) = 'invalid-token';
+		promptStr = promptStr.replace(
+			/%([a-zA-Z])/g,
+			(match, token) => {
+				let promptValue = promptData[token];
+				if (promptValue === null || promptValue === undefined) {
+					promptValue = 'invalid-token';
+				}
+				return promptValue as string;
 			}
-			promptStr = promptStr.replace(matches[0], promptValue as string);
-		}
+		);
 
 		return promptStr;
 	}
