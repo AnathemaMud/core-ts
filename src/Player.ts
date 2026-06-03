@@ -137,8 +137,22 @@ export class Player extends Character {
 		}
 		const promptData = Object.assign(attributeData, extraData);
 
+		// Short aliases for common prompt tokens
+		const pd = promptData as any;
+		pd.h = pd.health?.current;
+		pd.H = pd.health?.max;
+		pd.m = pd.mana?.current;
+		pd.M = pd.mana?.max;
+		pd.v = pd.energy?.current;
+		pd.V = pd.energy?.max;
+		pd.x = pd.experience;
+		pd.t = pd.tnl;
+		pd.l = pd.level;
+		pd.g = pd.gold;
+		pd.n = pd.target?.name;
+
 		let matches = null;
-		while ((matches = promptStr.match(/%([a-z\.]+)%/))) {
+		while ((matches = promptStr.match(/%([a-zA-Z\.]+)%/))) {
 			const token = matches[1];
 			let promptValue: any = token
 				.split('.')
