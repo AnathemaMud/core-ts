@@ -20,6 +20,7 @@ export interface INpcDef extends ICharacterConfig, EntityDefinitionBase {
 	entityReference: EntityReference;
 	keywords: string[];
 	quests?: EntityReference[];
+	roomDesc?: string;
 	uuid?: string;
 }
 
@@ -33,6 +34,7 @@ export class Npc extends Character {
 	entityReference: EntityReference;
 	id: number | string;
 	quests: EntityReference[];
+	roomDesc: string;
 	uuid: string;
 	commandQueue: CommandQueue;
 	keywords: string[];
@@ -61,6 +63,7 @@ export class Npc extends Character {
 		this.entityReference = data.entityReference;
 		this.keywords = data.keywords;
 		this.id = data.id;
+		this.roomDesc = data.roomDesc || data.name;
 
 		this.quests = data.quests || [];
 
