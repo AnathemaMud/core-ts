@@ -139,14 +139,7 @@ export class Channel {
 			}
 			if (!message.length) {
 				throw new NoMessageError();
-			}
-
-			const target = targets[0];
-
-			Broadcast.sayAt(
-				sender,
-				this.formatter.sender(sender, target, message, this.colorify.bind(this))
-			);
+			}		
 		} else {
 			Broadcast.sayAt(
 				sender,
