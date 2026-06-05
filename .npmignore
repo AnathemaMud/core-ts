@@ -8,5 +8,5 @@
 !index.d.ts
 !types/*
 !package*
-!dist/*
+!dist/**
 !tsconfig.json
