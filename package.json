@@ -13,7 +13,7 @@
 	"scripts": {
 		"test": "nyc --reporter=html --reporter=text --include=src --all mocha --recursive",
 		"coverage": "nyc report --reporter=text-lcov | coveralls",
-		"prepare": "npm run build",
+		"prepare": "tsc && tsc -p tsconfig-cjs.json",
 		"build": "tsc",
 		"project": "npx tsc -p tsconfig.json",
 		"watch": "tsc --watch --project tsconfig.json",
