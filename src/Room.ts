@@ -33,6 +33,7 @@ export interface IRoomDef extends EntityDefinitionBase {
 	attributes?: SerializedAttributes;
 	effects?: ISerializedEffect[];
 	coordinates?: [number, number, number];
+	sector?: string;
 	doors?: Record<string, IDoor>;
 	exits?: IExit[];
 	metadata?: Record<string, any>;
