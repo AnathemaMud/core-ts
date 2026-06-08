@@ -84,10 +84,11 @@ export class QuestFactory {
 		player: Player,
 		state: ISerializedQuestDef[] = []
 	) {
-		const quest = this.quests.get(qid);
-		if (!quest) {
-			throw new Error(`Trying to create invalid quest id [${qid}]`);
-		}
+	const quest = this.quests.get(qid);
+	if (!quest) {
+		Logger.warn(`QuestFactory: invalid quest id [${qid}], skipping`);
+		return null;
+	}
 
 		const instance = new Quest(GameState, quest.id, quest.config, player);
 		instance.state = state;

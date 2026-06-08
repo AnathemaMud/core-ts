@@ -123,6 +123,10 @@ export class QuestTracker {
 				this.player,
 				(data.state as ISerializedQuestDef[])
 			);
+			if (!quest) {
+				this.activeQuests.delete(qid);
+				continue;
+			}
 			quest.started = data.started;
 			quest.hydrate();
 
