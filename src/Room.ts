@@ -304,6 +304,12 @@ export class Room extends GameEntity {
 			return false;
 		}
 
+		// Exact match first — prevents "south" matching "southwest"
+		const exact = exits.find(
+			(ex: IExit) => ex.direction === exitName
+		);
+		if (exact) return exact;
+
 		const roomExit = exits.find(
 			(ex: IExit) => ex.direction.indexOf(exitName) === 0
 		);
