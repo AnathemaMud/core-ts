@@ -155,6 +155,7 @@ export class EffectList {
 
 		this.effects.add(effect);
 		effect.target = this.target;
+		effect.activate();
 
 		/**
 		 * @event Effect#effectAdded
