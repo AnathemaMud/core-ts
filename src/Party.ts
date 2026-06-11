@@ -6,6 +6,7 @@ import { PlayerOrNpc } from './GameEntity';
 export class Party extends Set<PlayerOrNpc> {
 	invited: Set<PlayerOrNpc>;
 	leader: PlayerOrNpc;
+	name?: string;
 	constructor(leader: PlayerOrNpc) {
 		super();
 		this.invited = new Set();
@@ -16,6 +17,7 @@ export class Party extends Set<PlayerOrNpc> {
 	delete(member: PlayerOrNpc) {
 		const deleted = super.delete(member);
 		member.party = null;
+		member.unfollow();
 		return deleted;
 	}
 
@@ -28,7 +30,9 @@ export class Party extends Set<PlayerOrNpc> {
 
 	disband() {
 		for (const member of this) {
-			this.delete(member);
+			member.unfollow();
+			super.delete(member);
+			member.party = null;
 		}
 	}
 
