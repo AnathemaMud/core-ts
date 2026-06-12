@@ -12,6 +12,8 @@ export interface ICommandDef {
 	requiredRole?: PlayerRoles;
 	metadata?: Record<string, any>;
 	command: Function;
+	category?: string;
+	displayAs?: string;
 }
 
 /**
@@ -35,6 +37,8 @@ export class Command {
 	requiredRole: PlayerRoles;
 	file: string;
 	metadata: Record<string, any>;
+	category: string;
+	displayAs: string;
 
 	/**
 	 * @param {string} bundle Bundle the command came from
@@ -57,6 +61,8 @@ export class Command {
 		this.requiredRole = def.requiredRole || PlayerRoles.PLAYER;
 		this.file = file;
 		this.metadata = def.metadata || {};
+		this.category = def.category || 'sistema';
+		this.displayAs = def.displayAs || this.name;
 	}
 
 	/**
