@@ -223,6 +223,7 @@ export class Broadcast {
 	 * @param {string} barChar Character to use for the current progress
 	 * @param {string} fillChar Character to use for the rest
 	 * @param {string} delimiters Characters to wrap the bar in
+	 * @param {string} tipChar Character for the progress tip (default `>`)
 	 * @return {string}
 	 */
 	static progress(
@@ -231,7 +232,8 @@ export class Broadcast {
 		color: string,
 		barChar: string = '#',
 		fillChar: string = ' ',
-		delimiters: string = '()'
+		delimiters: string = '()',
+		tipChar: string = '>'
 	) {
 		percent = Math.max(0, percent);
 		width -= 3; // account for delimiters and tip of bar
@@ -247,7 +249,7 @@ export class Broadcast {
 		const widthPercent = Math.round((percent / 100) * width);
 		buf +=
 			Broadcast.line(widthPercent, barChar) +
-			(percent === 100 ? '' : rightDelim);
+			(percent === 100 ? '' : tipChar);
 		buf += Broadcast.line(width - widthPercent, fillChar);
 		buf += '</bold>' + rightDelim + closeColor;
 		return buf;
