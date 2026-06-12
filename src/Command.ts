@@ -61,7 +61,7 @@ export class Command {
 		this.requiredRole = def.requiredRole || PlayerRoles.PLAYER;
 		this.file = file;
 		this.metadata = def.metadata || {};
-		this.category = def.category || 'sistema';
+		this.category = def.category || 'general';
 		this.displayAs = def.displayAs || this.name;
 	}
 
