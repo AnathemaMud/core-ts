@@ -308,11 +308,8 @@ export class Item extends GameEntity {
 			this.area = state.AreaManager.getArea(this.area);
 		}
 
-		// if the item was saved with a custom inventory hydrate it
-		if (this.inventory) {
-			this.inventory.hydrate(state, this);
-		} else {
-			// otherwise load its default inv
+		// Load default items from YAML definition (fresh spawn, not deserialized)
+		if (!serialized && this.defaultItems.length > 0) {
 			this.defaultItems.forEach((defaultItemId: IItemDef | string) => {
 				if (typeof defaultItemId == 'string') {
 					Logger.verbose(
@@ -324,6 +321,11 @@ export class Item extends GameEntity {
 					this.addItem(newItem);
 				}
 			});
+		}
+
+		// Hydrate serialized inventory (restored from player save)
+		if (this.inventory) {
+			this.inventory.hydrate(state, this);
 		}
 	}
 
