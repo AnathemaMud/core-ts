@@ -168,6 +168,8 @@ export class Quest extends EventEmitter {
 
 	hydrate() {
 		(this.state as ISerializedQuestGoal[]).forEach((goalState, i: number) => {
+			// Skip if goal was removed from YAML config (saved state mismatch)
+			if (!this.goals[i]) return;
 			this.goals[i].hydrate(goalState.state);
 		});
 	}
