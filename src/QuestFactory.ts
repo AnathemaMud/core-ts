@@ -66,9 +66,12 @@ export class QuestFactory {
 			return true;
 		}
 
-		return quest.config.requires.every((requiresRef) =>
-			tracker.isComplete(requiresRef)
-		);
+		return quest.config.requires.every((requiresRef) => {
+			if (typeof requiresRef === 'string' && requiresRef.startsWith('level:')) {
+				return player.level >= parseInt(requiresRef.split(':')[1], 10);
+			}
+			return tracker.isComplete(requiresRef);
+		});
 	}
 
 	/**
