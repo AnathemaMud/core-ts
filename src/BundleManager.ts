@@ -125,9 +125,16 @@ export class BundleManager {
 
 		Logger.verbose(`LOAD: BUNDLE [\x1B[1;33m${bundle}\x1B[0m] START`);
 		for (const feature of features) {
-			const path = bundlePath + '/' + feature.path;
-			if (fs.existsSync(path)) {
-				feature.fn.call(this, bundle, path);
+			let featurePath = bundlePath + '/' + feature.path;
+			// support .ts variant for single-file features
+			if (featurePath.endsWith('.js')) {
+				const tsPath = featurePath.slice(0, -3) + '.ts';
+				if (fs.existsSync(tsPath)) {
+					featurePath = tsPath;
+				}
+			}
+			if (fs.existsSync(featurePath)) {
+				feature.fn.call(this, bundle, featurePath);
 			}
 		}
 
@@ -308,7 +315,7 @@ export class BundleManager {
 		const scriptPath = this._getAreaScriptPath(bundle, 'area');
 
 		if (manifest.script) {
-			const areaScriptPath = `${scriptPath}/${manifest.script}.js`;
+			const areaScriptPath = BundleManager._resolveScriptPath(scriptPath, manifest.script);
 			if (!fs.existsSync(areaScriptPath)) {
 				Logger.warn(
 					`\t\t\t[${areaName}] has non-existent script "${manifest.script}"`
@@ -421,7 +428,7 @@ export class BundleManager {
 					}
 				}
 
-				const entityScript = `${scriptPath}/${entity.script}.js`;
+				const entityScript = BundleManager._resolveScriptPath(scriptPath, entity.script);
 				if (!fs.existsSync(entityScript)) {
 					Logger.warn(
 						`\t\t\t[${entityRef}] has non-existent script "${entity.script}"`
@@ -779,5 +786,21 @@ export class BundleManager {
 	 */
 	_getAreaScriptPath(bundle: string, type: string) {
 		return `${this.bundlesPath}/${bundle}/scripts/${type}`;
+	}
+
+	/**
+	 * Resolve a script path by checking both .ts and .js variants.
+	 * Returns the path to the .ts file if it exists, otherwise .js.
+	 * @private
+	 * @param {string} dir
+	 * @param {string} name
+	 * @return {string}
+	 */
+	static _resolveScriptPath(dir: string, name: string): string {
+		const tsPath = `${dir}/${name}.ts`;
+		if (fs.existsSync(tsPath)) {
+			return tsPath;
+		}
+		return `${dir}/${name}.js`;
 	}
 }

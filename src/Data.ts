@@ -143,7 +143,7 @@ export class Data {
 	 */
 	static isScriptFile(path: string, file: string) {
 		file = file || path;
-		return fs.statSync(path).isFile() && file.match(/js$/);
+		return fs.statSync(path).isFile() && file.match(/[jt]s$/);
 	}
 
 	/**
