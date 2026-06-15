@@ -1,11 +1,11 @@
 const assert = require('assert');
-const { Attribute } = require('../../src/Attribute');
+const { Attribute } = require('../../dist/cjs/Attribute');
 
 describe('Basic Attribute',  () => {
   let attribute = null;
   const base = 10;
   beforeEach(() => {
-    attribute = new Attribute('test', base);
+    attribute = new Attribute('test', base, 0);
   });
 
   describe('#setBase', () => {

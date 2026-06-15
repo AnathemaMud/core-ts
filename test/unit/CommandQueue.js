@@ -1,5 +1,5 @@
 const assert = require('assert');
-const CommandQueue = require('../../src/CommandQueue');
+const { CommandQueue } = require('../../dist/cjs/CommandQueue');
 
 describe('Command Queue',  function () {
   let queue = null;

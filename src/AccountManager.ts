@@ -29,6 +29,7 @@ export class AccountManager {
 	 * @param {Account} account
 	 */
 	addAccount(account: Account) {
+		account.__manager = this;
 		this.accounts.set(account.username, account);
 	}
 
