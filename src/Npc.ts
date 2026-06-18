@@ -48,7 +48,7 @@ export class Npc extends Character {
 		for (const prop of Npc.validate) {
 			if (!(prop in data)) {
 				throw new ReferenceError(
-					`NPC in area [${area.name}] missing required property [${prop}]`
+					`NPC in area [${area.name}] missing required property [${String(prop)}]`
 				);
 			}
 		}
