@@ -19,6 +19,7 @@ export interface IQuestDef {
 	goals: IQuestGoalDef[];
 	started?: number;
 	npc?: string;
+	receives?: string[];
 }
 
 export interface ISerializedQuestDef {

@@ -112,6 +112,20 @@ export class QuestFactory {
 
 		instance.on('start', () => {
 			player.emit('questStart', instance);
+
+			if (quest.config.receives) {
+				for (const itemRef of quest.config.receives) {
+					try {
+						const area = GameState.AreaManager.getAreaByReference(itemRef);
+						const item = GameState.ItemFactory.create(area, itemRef);
+						player.addItem(item);
+						player.emit('receiveItem', { item, npc: null });
+					} catch (e) {
+						Logger.warn(`QuestFactory: failed to create receives item [${itemRef}] for quest ${qid}: ${(e as Error).message}`);
+					}
+				}
+			}
+
 			instance.emit('progress', instance.getProgress());
 		});
 
