@@ -37,8 +37,8 @@ export interface IQuestGoalState {
  * @extends EventEmitter
  */
 export class QuestGoal<
-	TConfig extends IQuestGoalConfig = Record<string, unknown>,
-	TState extends IQuestGoalState = Record<string, unknown>
+	TConfig extends IQuestGoalConfig = Record<string, any>,
+	TState extends IQuestGoalState = Record<string, any>
 > extends EventEmitter {
 	config: TConfig;
 	quest: Quest;
