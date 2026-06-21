@@ -17,6 +17,7 @@ export interface IQuestDef {
 	repeatable?: boolean;
 	rewards: IQuestRewardDef[];
 	goals: IQuestGoalDef[];
+	anyOf?: IQuestGoalDef[];
 	started?: number;
 	npc?: string;
 	receives?: string[];
@@ -24,6 +25,7 @@ export interface IQuestDef {
 
 export interface ISerializedQuestDef {
 	state: ISerializedQuestGoal[];
+	anyOf?: ISerializedQuestGoal[];
 	progress: {
 		percent: number;
 		display: string;
@@ -47,6 +49,7 @@ export class Quest extends EventEmitter {
 	config: IQuestDef;
 	player: Player;
 	goals: QuestGoal[];
+	anyOfGoals: QuestGoal[];
 	state: Record<string, any> | ISerializedQuestDef[];
 	GameState: IGameState;
 	started?: string;
@@ -78,6 +81,7 @@ export class Quest extends EventEmitter {
 
 		this.player = player;
 		this.goals = [];
+		this.anyOfGoals = [];
 		this.state = [];
 		this.GameState = GameState;
 	}
@@ -99,6 +103,10 @@ export class Quest extends EventEmitter {
 			goal.emit(event, ...args);
 		});
 
+		this.anyOfGoals.forEach((goal) => {
+			goal.emit(event, ...args);
+		});
+
 		return result;
 	}
 
@@ -107,14 +115,22 @@ export class Quest extends EventEmitter {
 		goal.on('progress', () => this.onProgressUpdated());
 	}
 
+	addAnyOfGoal(goal: QuestGoal) {
+		this.anyOfGoals.push(goal);
+		goal.on('progress', () => this.onProgressUpdated());
+	}
+
 	/**
 	 * @fires Quest#turn-in-ready
 	 * @fires Quest#progress
 	 */
 	onProgressUpdated() {
-		const progress = this.getProgress();
+		const goalsDone = this.goals.length === 0 ||
+			this.goals.every((g) => g.getProgress().percent >= 100);
+		const anyOfDone = this.anyOfGoals.length === 0 ||
+			this.anyOfGoals.some((g) => g.getProgress().percent >= 100);
 
-		if (progress.percent >= 100) {
+		if (goalsDone && anyOfDone) {
 			if (this.config.autoComplete) {
 				this.complete();
 			} else {
@@ -130,24 +146,36 @@ export class Quest extends EventEmitter {
 		 * @event Quest#progress
 		 * @param {object} progress
 		 */
-		this.emit('progress', progress);
+		this.emit('progress', this.getProgress());
 	}
 
 	/**
 	 * @return {{ percent: number, display: string }}
 	 */
 	getProgress() {
-		let overallPercent = 0;
-		let overallDisplay: string[] = [];
-		this.goals.forEach((goal) => {
-			const goalProgress = goal.getProgress();
-			overallPercent += goalProgress.percent;
-			overallDisplay.push(goalProgress.display);
-		});
+		const goalsPct = this.goals.length
+			? this.goals.reduce((s, g) => s + g.getProgress().percent, 0) / this.goals.length
+			: 100;
+
+		const anyOfPct = this.anyOfGoals.length
+			? Math.max(...this.anyOfGoals.map((g) => g.getProgress().percent))
+			: 100;
+
+		const totalWeight = (this.goals.length > 0 ? 1 : 0) + (this.anyOfGoals.length > 0 ? 1 : 0);
+		const overall = totalWeight === 0
+			? 100
+			: totalWeight === 1
+				? (this.goals.length > 0 ? goalsPct : anyOfPct)
+				: (goalsPct + anyOfPct) / 2;
+
+		const display = [
+			...this.goals.map((g) => g.getProgress().display),
+			...this.anyOfGoals.map((g) => g.getProgress().display),
+		].filter(Boolean).join('\r\n');
 
 		return {
-			percent: Math.round(overallPercent / this.goals.length),
-			display: overallDisplay.join('\r\n'),
+			percent: Math.round(overall),
+			display,
 		};
 	}
 
@@ -156,7 +184,7 @@ export class Quest extends EventEmitter {
 	 * @return {object}
 	 */
 	serialize(): ISerializedQuestDef {
-		return {
+		const serialized: ISerializedQuestDef = {
 			state: this.goals.map((goal) => goal.serialize()),
 			progress: this.getProgress(),
 			config: {
@@ -165,14 +193,33 @@ export class Quest extends EventEmitter {
 				title: this.config.title,
 			},
 		};
+
+		if (this.anyOfGoals.length) {
+			serialized.anyOf = this.anyOfGoals.map((goal) => goal.serialize());
+		}
+
+		return serialized;
 	}
 
 	hydrate() {
-		(this.state as ISerializedQuestGoal[]).forEach((goalState, i: number) => {
-			// Skip if goal was removed from YAML config (saved state mismatch)
-			if (!this.goals[i]) return;
-			this.goals[i].hydrate(goalState.state);
-		});
+		const serializedState = this.state as ISerializedQuestDef;
+		if (Array.isArray(serializedState)) {
+			// legacy: state was an array of goal states
+			(serializedState as unknown as ISerializedQuestGoal[]).forEach((goalState, i) => {
+				if (!this.goals[i]) return;
+				this.goals[i].hydrate(goalState.state);
+			});
+		} else {
+			// new: state is ISerializedQuestDef with state and anyOf
+			serializedState.state?.forEach((goalState, i) => {
+				if (!this.goals[i]) return;
+				this.goals[i].hydrate(goalState.state);
+			});
+			serializedState.anyOf?.forEach((goalState, i) => {
+				if (!this.anyOfGoals[i]) return;
+				this.anyOfGoals[i].hydrate(goalState.state);
+			});
+		}
 	}
 
 	/**
@@ -184,6 +231,9 @@ export class Quest extends EventEmitter {
 		 */
 		this.emit('complete');
 		for (const goal of this.goals) {
+			goal.complete();
+		}
+		for (const goal of this.anyOfGoals) {
 			goal.complete();
 		}
 	}

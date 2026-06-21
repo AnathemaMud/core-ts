@@ -105,6 +105,18 @@ export class QuestFactory {
 			instance.addGoal(new goalType(instance, goal.config, player));
 		}
 
+		if (quest.config.anyOf) {
+			for (const goal of quest.config.anyOf) {
+				const goalType = GameState.QuestGoalManager.get(goal.type);
+				if (!goalType) {
+					throw new Error(
+						`QuestFactory did not find the anyOf goal with the type [${goal.type}]`
+					);
+				}
+				instance.addAnyOfGoal(new goalType(instance, goal.config, player));
+			}
+		}
+
 		instance.on('progress', (progress: ISerializedQuestGoal['progress']) => {
 			player.emit('questProgress', instance, progress);
 			player.save();
