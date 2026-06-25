@@ -25,14 +25,15 @@ export class MobManager {
 		mob.effects.clear();
 
 		const sourceRoom = mob.sourceRoom;
+		const currentRoom = mob.room;
+
 		if (sourceRoom) {
 			sourceRoom.area.removeNpc(mob);
 			sourceRoom.removeNpc(mob, true);
 		}
 
-		const room = mob.room;
-		if (room && room !== sourceRoom) {
-			room.removeNpc(mob);
+		if (currentRoom && currentRoom !== sourceRoom) {
+			currentRoom.removeNpc(mob);
 		}
 
 		if (mob.equipment && mob.equipment.size) {
